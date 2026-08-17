@@ -1,24 +1,114 @@
 aid: shadow
 name: Shadow
-description: 'Shadow is a company surfaced as a portfolio company of serena and added to the API Evangelist
-  network as a stub for enrichment. Sector: ai-data. This profile is a lead awaiting the enrichment pipeline.'
+description: 'Shadow is a French cloud computing company founded in 2015, launched commercially in
+  2016, and chaired by OVHcloud founder Octave Klaba. It streams complete high-end Windows desktops
+  (Shadow PC, Shadow PC Pro), sells Nextcloud-based storage as Shadow Drive, and sells sovereign GPU
+  compute as Shadow GPU — an OpenStack 2024.1 platform running across seven regions in France,
+  Germany, the United States and Canada. Shadow GPU is programmable only through the standard
+  OpenStack API: a Keystone v3.14 identity endpoint answers anonymously at
+  https://auth.<region>.os.shadow.tech/v3, fronting Nova (compute), Neutron and Octavia
+  (networking / load balancing), Designate (DNS), Cinder and Glance (storage and images), Placement,
+  Barbican (secrets), CloudKitty (rating) and the Skyline / Horizon dashboards, driven with the
+  upstream openstack CLI, Terraform, Ansible, Pulumi or Cluster API. Shadow publishes no OpenAPI,
+  AsyncAPI, first-party SDK, MCP server or A2A agent card of its own.'
 url: https://raw.githubusercontent.com/api-evangelist/shadow/refs/heads/main/apis.yml
+image: https://gpu-instances.shadow.tech/assets/images/vignette.png
 x-type: company
 x-source: serena-portfolio
-x-tier: stub
-x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-08-17'
 modified: '2026-08-17'
 tags:
 - Company
-- Ai Data
-apis: []
+- Cloud Computing
+- GPU
+- Cloud Gaming
+- Infrastructure
+- OpenStack
+- AI Infrastructure
+- Compute
+- Storage
+- Europe
+apis:
+- aid: shadow-gpu-openstack
+  name: Shadow GPU (OpenStack API)
+  description: 'Shadow GPU is Shadow''s sovereign GPU cloud, delivered as a curated OpenStack 2024.1
+    deployment rather than a bespoke REST API. Every programmatic action — launching NVIDIA RTX 2000
+    Ada or RTX A4500 GPU instances, attaching Cinder volumes, wiring Neutron networks and Octavia
+    load balancers, managing Barbican secrets, reading CloudKitty usage — is performed against the
+    standard OpenStack service APIs. Authentication is Keystone: a domain-scoped user (user#domain)
+    or, for automation, an Application Credential, delivered as a clouds.yaml or openrc.sh downloaded
+    from the dashboard. The Keystone identity endpoint answers anonymously and self-identifies at
+    https://auth.<region>.os.shadow.tech/v3; the rest of the service catalog is returned only inside
+    an authenticated token response, so per-service endpoints are not publicly enumerable. Shadow
+    publishes no OpenAPI document for this surface and points users to the upstream OpenStack API
+    reference.'
+  humanURL: https://gpu-instances.shadow.tech/en/
+  baseURL: https://auth.frsbg01.os.shadow.tech/v3
+  tags:
+  - GPU
+  - Compute
+  - OpenStack
+  - Infrastructure
+  properties:
+  - type: Documentation
+    url: https://gpu-instances.shadow.tech/docs/
+  - type: GettingStarted
+    url: https://gpu-instances.shadow.tech/docs/getting-started/
+  - type: Authentication
+    url: authentication/shadow-authentication.yml
+  - type: Conventions
+    url: conventions/shadow-conventions.yml
+  - type: Conformance
+    url: conformance/shadow-conformance.yml
+  - type: RateLimits
+    url: rate-limits/shadow-rate-limits.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/shadow-domain-security.yml
 - type: Website
   url: https://shadow.tech/
+- type: Documentation
+  url: https://gpu-instances.shadow.tech/docs/
+- type: GettingStarted
+  url: https://gpu-instances.shadow.tech/docs/getting-started/
+- type: Support
+  url: https://support.shadow.tech/hc/en-us
+- type: Blog
+  url: https://shadow.tech/us/blog/
+- type: Pricing
+  url: https://gpu-instances.shadow.tech/en/#pricing
+- type: Login
+  url: https://pc.shadow.tech/login
+- type: TermsOfService
+  url: https://shadow.tech/us/terms-of-use/
+- type: PrivacyPolicy
+  url: https://shadow.tech/us/privacy-policy/
+- type: StatusPage
+  url: https://status.shadow.tech/
+- type: Lifecycle
+  url: lifecycle/shadow-lifecycle.yml
+- type: Authentication
+  url: authentication/shadow-authentication.yml
+- type: Conventions
+  url: conventions/shadow-conventions.yml
+- type: Conformance
+  url: conformance/shadow-conformance.yml
+- type: Plans
+  url: plans/shadow-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/shadow-rate-limits.yml
+- type: Packages
+  url: packages/shadow-packages.yml
+- type: LLMsTxt
+  url: llms/shadow-llms.txt
+x-enrichment:
+  date: '2026-08-17'
+  status: enriched
+  artifacts_added: 13
+  pass: local-v1

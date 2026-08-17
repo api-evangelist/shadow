@@ -1,0 +1,64 @@
+generated: '2026-08-17'
+method: searched
+source: https://gpu-instances.shadow.tech/docs/faq/
+limit_count: 0
+note: >-
+  Shadow publishes no request-rate limits for the Shadow GPU API and no rate-limit response headers.
+  What it does publish is a quota model — the OpenStack per-project resource quota, plus a commercial
+  instance limit — which constrains what an API caller can create rather than how often it can call.
+  Recorded as limit_count 0 because no numeric request-rate limit, window, burst, or exhaustion status
+  code is published anywhere on the developer surface. Searched the docs FAQ, the quota section, the
+  limitations page and the pricing FAQ; no numbers are given for any quota either.
+rate_limits: []
+response_headers:
+  published: []
+  note: >-
+    No X-RateLimit-*, RateLimit-* or Retry-After documentation exists, and no unauthenticated
+    operational endpoint was available to observe headers on. The only anonymous endpoint on the
+    platform is the Keystone version document (GET https://auth.<region>.os.shadow.tech/v3), which
+    returned no rate-limit headers when probed on 2026-08-17.
+exhaustion_status_code: not-documented
+quotas:
+- scope: per-project
+  kind: resource-quota
+  resources: [vCPU, RAM, storage, volumes, instances]
+  limit: not-published
+  enforcement: >-
+    Creation fails on exhaustion. Documented as a first-line cause of both instance launch failure
+    ("Insufficient quota limits for CPU, RAM, or storage") and volume creation failure ("Exceeding your
+    storage quota").
+  visibility: 'Current quota usage is viewable in the dashboard; the docs give no CLI/API command and
+    publish no default values.'
+  increase_process: '"Request quota increases through proper channels if needed" — no self-service path
+    and no documented turnaround.'
+  source: https://gpu-instances.shadow.tech/docs/faq/
+- scope: per-account
+  kind: instance-limit
+  limit: not-published
+  enforcement: commercial
+  increase_process: >-
+    Published verbatim as: "The limit can be revised after several regular billing cycles. Contact our
+    Sales team for quick validation and to avoid service interruption." The instance ceiling is
+    therefore time-and-sales gated, not a technical limit an integrator can plan against.
+  source: https://gpu-instances.shadow.tech/en/
+- scope: per-volume
+  kind: storage-qos
+  limit: 'Write IOPS 60,000 (max 120,000); Read IOPS 60,000 (max 120,000); Write throughput 250 MB/s;
+    Read throughput 500 MB/s'
+  applies_to: [Wood, Silver, 'Gold (coming soon)']
+  enforcement: Cinder QoS
+  caveat: >-
+    Shadow publishes the SAME QoS figures for all three storage tiers, so the published numbers do not
+    distinguish the tiers they are attached to. Quoted as published.
+  source: https://gpu-instances.shadow.tech/docs/advanced/storage-classes/
+preemption:
+  applies_to: Spot instances
+  behaviour: 'Not guaranteed — preemptible based on availability'
+  notice_period: not-documented
+  note: >-
+    Spot preemption is the most consequential runtime limit on this platform and Shadow documents no
+    notice period, no preemption signal, and no API event an agent or autoscaler could subscribe to.
+  source: https://gpu-instances.shadow.tech/en/
+cross_links:
+  conventions: conventions/shadow-conventions.yml
+  plans: plans/shadow-plans-pricing.yml

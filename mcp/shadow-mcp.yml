@@ -1,0 +1,41 @@
+generated: '2026-08-17'
+method: searched
+source: 'searches of shadow.tech, gpu-instances.shadow.tech docs, npm and PyPI; live probes of every
+  Shadow host'
+status: none
+note: >-
+  Shadow ships no MCP server — no hosted endpoint and no local stdio package. No candidate tool list
+  was derived either, because Shadow publishes no OpenAPI to derive tools from; the programmable
+  surface is the upstream OpenStack API, and inventing tool names for it would attribute an agent
+  surface to Shadow that does not exist. This file records a searched absence. No MCPServer pointer is
+  emitted in apis.yml.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: searched
+server: null
+tools: []
+searched:
+- {target: 'shadow.tech + gpu-instances.shadow.tech documentation', result: 'no mention of MCP, agents,
+    or Model Context Protocol'}
+- {target: 'npm (shadow-sdk, @shadow-tech/sdk, shadow-tech)', result: 404}
+- {target: 'PyPI (shadow-tech, shadowtech)', result: 404}
+- {target: 'GitHub organisation', result: 'none exists — github.com/shadow-tech is an unrelated
+    individual account'}
+- {target: 'https://gpu-instances.shadow.tech/llms.txt', result: 'HTTP 200 but an HTML redirect shell,
+    not an llms.txt, so no published tool list to fall back to'}
+probed_endpoints:
+- {url: 'https://shadow.tech/.well-known/ai-plugin.json', status: 404}
+- {url: 'https://gpu-instances.shadow.tech/.well-known/ai-plugin.json', status: 200, real_document: false,
+    note: HTML SPA shell}
+- {url: 'https://api.uswdc01.os.shadow.tech/', status: 404}
+- {url: 'https://api.frsbg01.os.shadow.tech/', status: 503}
+agent_readiness_note: >-
+  The nearest thing to an agent-usable contract on this platform is the anonymous Keystone version
+  document at https://auth.<region>.os.shadow.tech/v3. Everything past authentication requires a
+  clouds.yaml that can only be downloaded from the dashboard by a logged-in human, and an account can
+  only be created through a sales contact form, so an autonomous agent cannot self-onboard onto Shadow
+  GPU at all.

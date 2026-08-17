@@ -1,0 +1,82 @@
+generated: '2026-08-17'
+method: searched
+source: 'registry probes (registry.npmjs.org, pypi.org, registry.terraform.io) + Shadow GPU docs
+  https://gpu-instances.shadow.tech/docs/cli-guide/configuration/'
+official_package_count: 0
+note: >-
+  Shadow publishes NO first-party client library, SDK, or CLI for any of its products. This was
+  checked, not assumed. Because Shadow GPU is a standard OpenStack deployment, the packages an
+  integrator actually installs are the upstream OpenStack ones, and Shadow's own documentation names
+  them explicitly — "pip install python-openstackclient" — which is why they are catalogued below with
+  official:false. No SDKs pointer is emitted in apis.yml: crediting Shadow with SDKs it does not ship
+  would be crediting the OpenStack community's work to the vendor.
+registries_probed:
+- {registry: npm, queries: ['shadow-sdk', '@shadow-tech/sdk', 'shadow-tech'], result: 404 on all}
+- {registry: pypi, queries: ['shadow-tech', 'shadowtech'], result: 404 on all}
+- {registry: github, queries: ['github.com/shadow-tech', 'github.com/shadowtechsa',
+    'github.com/blade-group'], result: 'no Shadow organisation — github.com/shadow-tech resolves to an
+    unrelated individual account with one repo named "Test"; the other two are 404'}
+packages:
+- language: python
+  registry: pypi
+  name: python-openstackclient
+  url: https://pypi.org/project/python-openstackclient/
+  install: pip install python-openstackclient
+  version: 10.2.1
+  published: '2026-07-15'
+  official: false
+  first_party: false
+  vendor: OpenStack / OpenInfra Foundation
+  note: >-
+    The CLI Shadow's own documentation instructs users to install, inside a virtualenv, to drive
+    Shadow GPU. Shadow requires Python 3.8 or later. Shadow ships no wrapper or plugin distribution of
+    its own around it.
+- language: python
+  registry: pypi
+  name: openstacksdk
+  url: https://pypi.org/project/openstacksdk/
+  install: pip install openstacksdk
+  version: 4.18.0
+  published: '2026-08-03'
+  official: false
+  first_party: false
+  vendor: OpenStack / OpenInfra Foundation
+  note: >-
+    The Python SDK that reads the same clouds.yaml Shadow's dashboard emits. Shadow does not name it in
+    the docs but it is the library path equivalent of the CLI Shadow does name; recorded so an
+    integrator knows the real programmatic entry point.
+- language: python
+  registry: pypi
+  name: python-adjutantclient
+  url: https://pypi.org/project/python-adjutantclient/
+  install: pip install python-adjutantclient
+  version: 1.5.0
+  published: '2026-01-08'
+  official: false
+  first_party: false
+  vendor: OpenStack / OpenInfra Foundation
+  note: >-
+    Provides the "openstack project user invite" and "openstack admin task token submit" commands that
+    Shadow's user-management guide depends on. Shadow states "Adjutant is enabled in your environment"
+    as a prerequisite but does not tell the reader to install this client.
+- language: hcl
+  registry: terraform
+  name: terraform-provider-openstack/openstack
+  url: https://registry.terraform.io/providers/terraform-provider-openstack/openstack/latest
+  install: 'terraform { required_providers { openstack = { source = "terraform-provider-openstack/openstack" } } }'
+  version: 3.4.0
+  published: '2025-11-11'
+  official: false
+  first_party: false
+  vendor: OpenStack Terraform provider maintainers
+  note: >-
+    Shadow advertises Terraform support on the Shadow GPU landing page ("IaC — Terraform · Ansible ·
+    Pulumi") and the CI/CD guide describes provisioning Shadow instances as Kubernetes worker nodes
+    with it, but publishes no Shadow-specific provider, module, or example repository.
+gaps:
+- 'No first-party SDK in any language (JavaScript, Python, Go, Java, .NET, Ruby, PHP, Rust all
+  checked by registry query or absence of any Shadow namespace).'
+- 'No Shadow GitHub organisation, so no source-available client, example, or Terraform module.'
+- 'No Shadow-published Terraform module or Ansible collection despite advertising both toolchains.'
+- 'No first-party CLI; see cli/shadow-cli.yml for the documented command surface and why no CLI
+  pointer is emitted.'

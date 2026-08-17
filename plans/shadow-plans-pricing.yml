@@ -1,0 +1,104 @@
+generated: '2026-08-17'
+method: searched
+source: https://gpu-instances.shadow.tech/en/
+currency: EUR
+plan_count: 3
+note: >-
+  Shadow GPU publishes its commercial model on its own landing page: three billing models (Pay as you
+  go, Monthly plan, Enterprise) crossed with three availability models (Spot, On Demand, Dedicated
+  24/7), plus per-configuration starting prices. Values below are quoted verbatim from the page.
+  Shadow's per-minute Spot rate is exposed only through an interactive cost simulator whose figure
+  changes with configuration, so it is NOT recorded as a fixed price here — only the stated hourly
+  starting prices are, because those are published as text.
+plans:
+- name: Pay as you go
+  label: Instant
+  price: null
+  price_model: usage-based
+  billing_period: per-minute
+  quota: null
+  overage: 'n/a — no commitment'
+  included:
+  - Instant start with no commitment
+  - Ultra-fine per-minute billing
+  - Standard weekday support
+  limits:
+  - 'Instance limit applies; "The limit can be revised after several regular billing cycles. Contact
+    our Sales team for quick validation and to avoid service interruption."'
+  self_serve: false
+  note: 'Billing detail as published: "Pay-as-you-go: per-minute billing, with a detailed summary of
+    consumed resources."'
+- name: Monthly plan
+  label: Predictable
+  price: null
+  price_model: fixed-monthly
+  billing_period: monthly
+  quota: 'planned quota (amount not published)'
+  overage: 'Additional billing in case of exceeding the planned quota'
+  included:
+  - Fixed monthly billing
+  - Guaranteed 24/7 access to your instances
+  - Fixed and predictable monthly budget
+  - Success Manager on demand
+  self_serve: false
+- name: Enterprise
+  label: Custom offer
+  price: null
+  price_model: negotiated
+  billing_period: negotiated
+  quota: 'Quotas and SLAs negotiated to your activity'
+  included:
+  - Customized terms
+  - Custom integrations (SSO, reporting, connectors)
+  - Dedicated Success Manager
+  self_serve: false
+  contact: 'Talk to an expert (contact form)'
+configurations:
+- name: RTX 2000 Ada GPU Instance
+  gpu: NVIDIA RTX 2000 Ada
+  starting_price: '€0.29/h'
+  approx_monthly: '≈ €220/month'
+  published_specs: 'RT Core 27.7 TFLOPS, Tensor 191.9 TFLOPS'
+- name: RTX A4500 GPU Instance
+  gpu: NVIDIA RTX A4500
+  starting_price: '€0.35/h'
+  approx_monthly: '≈ €250/month'
+  published_specs: 'RT Core 46.2 TFLOPS, Tensor 189.2 TFLOPS, up to 8 cards in one instance, 20 GB
+    VRAM'
+availability_models:
+- name: Spot
+  guarantee: 'Not guaranteed — preemptible based on availability'
+  positioning: Performance at best price
+  use_cases: [R&D and experimentation, batch processing, CI/CD, one-off calculations]
+- name: On Demand
+  guarantee: 'Guaranteed — once allocated, availability assured'
+  positioning: Flexibility and continuity
+  use_cases: [3D and video rendering, AI inference, development, interactive workloads]
+- name: Dedicated 24/7
+  guarantee: 'Complete guarantee for the entire reservation period'
+  positioning: Permanently guaranteed capacity, reserved and isolated
+  use_cases: [model training, production AI pipelines, permanent workloads, critical environments]
+metering:
+  service: CloudKitty (OpenStack rating and usage engine)
+  dashboards: 'Real-time cost dashboards (marketing claim)'
+  simulator: 'Interactive cost simulator on https://gpu-instances.shadow.tech/en/ comparing PAYG vs
+    subscription by configuration, instance count, rate type and daily usage'
+  cost_control_note: >-
+    Shadow documents that only shelving an instance releases compute resources and stops charges;
+    stop, power off, pause and suspend all continue to reserve resources and incur charges. A shelved
+    instance is billed only for its stored image.
+  api_access_to_billing: 'CloudKitty is listed in the architecture, so usage/rating data is reachable
+    through the OpenStack rating API for an authenticated project; no billing API is separately
+    documented.'
+access:
+  self_service_signup: false
+  gate: '"Request access" / "Talk to an expert" contact form; the page advertises "⚡ 24h activation"'
+  note: >-
+    There is no self-service credit-card signup for Shadow GPU. An account is provisioned by Shadow,
+    after which the customer's project admin invites further users. This gates the API behind a sales
+    step even though the pricing itself is public.
+other_products_not_scored_here:
+  note: >-
+    Shadow's consumer and prosumer subscriptions (Shadow PC, Shadow PC Lite, Shadow PC Pro, Shadow
+    Drive) are published at https://shadow.tech/us/shadowpc/offers/ but are end-user desktop
+    subscriptions with no API surface, so they are not enumerated as API plans.

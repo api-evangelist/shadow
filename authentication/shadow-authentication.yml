@@ -1,0 +1,171 @@
+generated: '2026-08-17'
+method: searched
+source: https://gpu-instances.shadow.tech/docs/getting-started/security-measures/
+docs:
+- https://gpu-instances.shadow.tech/docs/getting-started/security-measures/
+- https://gpu-instances.shadow.tech/docs/cli-guide/configuration/
+- https://gpu-instances.shadow.tech/docs/getting-started/skyline-interface/
+- https://gpu-instances.shadow.tech/docs/getting-started/project-management/
+note: >-
+  Shadow publishes no OpenAPI document, so this profile could not be derived mechanically. It was
+  read from Shadow GPU's own documentation and confirmed against a live anonymous probe of the
+  Keystone identity endpoint. Shadow GPU is a curated OpenStack 2024.1 deployment, so its
+  authentication model IS the OpenStack Keystone v3 model — there is no Shadow-specific token
+  scheme, API-key header, or OAuth 2.0 authorization server.
+summary:
+  types:
+  - keystone-password
+  - keystone-application-credential
+  api_key_in: []
+  oauth2_flows: []
+  standard: OpenStack Identity API v3 (Keystone)
+  identity_api_version: v3.14
+  probed_anonymously: true
+schemes:
+- name: Keystone password (domain-scoped user)
+  type: password
+  protocol: OpenStack Identity API v3
+  description: >-
+    Interactive and CLI authentication uses a domain-scoped username of the form user#domain (the
+    docs give the example "user#mycompany-domain") plus a password, against the region's Keystone
+    identity endpoint. The dashboard emits a ready-made clouds.yaml (Password Type) or openrc.sh
+    which the operator saves to ~/.config/openstack/clouds.yaml and selects with the OS_CLOUD
+    environment variable.
+  credential_delivery:
+  - clouds.yaml (downloaded from the dashboard User Menu, "Get clouds.yaml file")
+  - openrc.sh (shell environment file, same menu)
+  source: https://gpu-instances.shadow.tech/docs/cli-guide/configuration/
+  recommended_for: interactive / human operators
+- name: Keystone Application Credential
+  type: application-credential
+  protocol: OpenStack Identity API v3
+  description: >-
+    The documented mechanism for authenticating applications and scripts without sharing the
+    primary account password. Created in the dashboard User Center under "Application Credentials"
+    with a name, an optional expiration date, and a selected set of roles. Shadow's docs state the
+    benefits verbatim as limited scope (restricted to specific projects), fine-grained access
+    control (exact roles and permissions), easy revocation (deleted without affecting the main
+    account), reduced risk (a compromise affects only that credential), and auditing (easier to
+    track which application or script is making specific API calls).
+  rotation_guidance: 'Documented best practice: "Regularly audit and rotate your application credentials."'
+  revocation: Delete Application Credential from the Application Credentials page
+  source: https://gpu-instances.shadow.tech/docs/getting-started/security-measures/
+  recommended_for: automation, third-party applications, scripts, CI/CD
+identity_endpoints:
+  note: >-
+    Probed anonymously on 2026-08-17. Shadow's published "Regions and Endpoints" page lists only the
+    portal (dashboard) URLs; the Keystone identity endpoints below were discovered by probe and are
+    self-attested by the API — the version document returns its own href, e.g.
+    https://auth.uswdc01.os.shadow.tech/v3/ — which is what proves the host belongs to Shadow. The
+    remainder of the OpenStack service catalog (Nova, Neutron, Cinder, Glance, Octavia, Designate,
+    Barbican, Placement, CloudKitty) is returned only inside an authenticated token response and is
+    therefore not publicly enumerable.
+  version_document_media_type: application/vnd.openstack.identity-v3+json
+  endpoints:
+  - region: FRSBG01
+    location: Strasbourg, France
+    url: https://auth.frsbg01.os.shadow.tech/v3
+    http_status: 200
+    identity_version: v3.14
+    tls: 'FAIL — certificate expired Jul 1 08:49:57 2026 GMT (CN=api.frsbg01.os.shadow.tech); a
+      strict-TLS client cannot complete a handshake against this identity endpoint'
+  - region: FRSBG02
+    location: Strasbourg, France (Edge)
+    url: https://auth.frsbg02.os.shadow.tech/v3
+    http_status: 200
+    identity_version: v3.14
+    tls: valid to Oct 13 10:52:22 2026 GMT
+  - region: FRDUN02
+    location: Dunkirk, France
+    url: https://auth.frdun02.os.shadow.tech/v3
+    http_status: 200
+    identity_version: v3.14
+    tls: valid to Nov  6 02:15:42 2026 GMT
+  - region: DEFRA01
+    location: Frankfurt, Germany
+    url: https://auth.defra01.os.shadow.tech/v3
+    http_status: 200
+    identity_version: v3.14
+    tls: valid to Nov 15 06:59:02 2026 GMT
+  - region: USWDC01
+    location: Washington DC, USA
+    url: https://auth.uswdc01.os.shadow.tech/v3
+    http_status: 200
+    identity_version: v3.14
+    tls: valid to Oct  1 08:55:45 2026 GMT
+  - region: USPOR01
+    location: Portland, USA
+    url: https://auth.uspor01.os.shadow.tech/v3
+    http_status: 200
+    identity_version: v3.14
+    tls: valid to Sep  9 08:08:52 2026 GMT
+  - region: CAMTL01
+    location: Montreal, Canada
+    url: https://auth.camtl01.os.shadow.tech/v3
+    http_status: 200
+    identity_version: v3.14
+    tls: valid to Sep 22 11:09:08 2026 GMT
+authorization:
+  model: Keystone role-based access control, project-scoped
+  note: >-
+    Shadow GPU has no OAuth 2.0 scope surface; authorization is expressed as Keystone role
+    assignments on a project. Roles below are quoted from Shadow's own documentation with the
+    Keystone role names it publishes.
+  roles:
+  - label: Member
+    keystone_role: member
+    description: Access to all project services, but cannot invite others or modify roles.
+  - label: Project Moderator
+    keystone_role: project_mod
+    description: Can invite users and update their roles, but cannot change the project admin.
+  - label: Project Administrator
+    keystone_role: project_admin
+    description: Complete management of the project, including user invitations and role assignments.
+  - label: Load Balancer Reader
+    keystone_role: load-balancer_observer
+    description: Can view load balancers and their configurations.
+  - label: Load Balancer Member
+    keystone_role: load-balancer_member
+    description: Can manage load balancers and their configurations.
+  - label: Secret Creator
+    keystone_role: creator
+    description: Can create and manage secrets.
+  - label: Secret Reader
+    keystone_role: observer
+    description: Can view secrets.
+  verify_command: openstack role assignment list --user <your-user-id> --project <your-project-id>
+  source: https://gpu-instances.shadow.tech/docs/getting-started/project-management/
+user_provisioning:
+  service: Adjutant (OpenStack project-user invitation workflow)
+  cli: openstack project user invite <email-address> <role-name>
+  list: openstack project user list
+  note: >-
+    Invitations are completed by the invitee through the dashboard (choose an initial password). An
+    advanced CLI-only path exists for automation via Adjutant's admin task interface
+    (openstack admin task token submit <invitation-token> '{"password": "..."}'). Requires
+    project_mod or project_admin.
+  source: https://gpu-instances.shadow.tech/docs/cli-guide/user-management/
+not_found:
+  - 'no OAuth 2.0 / OpenID Connect authorization server: /.well-known/openid-configuration and
+    /.well-known/oauth-authorization-server return 404 on shadow.tech and an HTML SPA shell (soft
+    200) on gpu-instances.shadow.tech'
+  - 'no API-key scheme documented for Shadow GPU'
+  - 'no mutual TLS / client-certificate option documented'
+  - 'no published OpenAPI securitySchemes to derive from'
+  - 'no self-service password reset: "Contact your OpenStack administrator through the established
+    support channels. For security reasons, password resets require verification of your identity and
+    cannot be performed through self-service." (docs FAQ)'
+x-evidence:
+  fetched: '2026-08-17'
+  probes:
+  - url: https://auth.uswdc01.os.shadow.tech/v3
+    status: 200
+    finding: Keystone v3.14 version document, self-href https://auth.uswdc01.os.shadow.tech/v3/
+  - url: https://auth.frsbg01.os.shadow.tech/v3
+    status: 200
+    finding: same version document, but TLS certificate expired 2026-07-01
+  - url: https://shadow.tech/.well-known/openid-configuration
+    status: 404
+  - url: https://developers.shadow.tech/
+    status: 403
+    finding: legacy developer portal now redirects to support.shadow.tech/hc/en-us

@@ -1,0 +1,131 @@
+generated: '2026-08-17'
+method: searched
+source: https://gpu-instances.shadow.tech/docs/getting-started/architecture/
+note: >-
+  Assessed from Shadow's own documentation plus live anonymous probes. Shadow publishes no OpenAPI,
+  so nothing here is derived from a spec. The single strongest conformance signal is that Shadow GPU
+  is a real OpenStack deployment whose Keystone endpoint answers with an OpenStack Identity API v3.14
+  version document on all seven regions.
+standards:
+- id: openstack-identity-v3
+  name: OpenStack Identity API v3 (Keystone)
+  conforms: true
+  version: v3.14
+  evidence: >-
+    Probed 2026-08-17. GET https://auth.<region>.os.shadow.tech/v3 returns 200 with
+    {"version":{"id":"v3.14","status":"stable","updated":"2020-04-07T00:00:00Z", ...}} and media type
+    application/vnd.openstack.identity-v3+json, on all seven documented regions.
+- id: openstack-2024.1
+  name: OpenStack 2024.1 (Caracal) service set
+  conforms: true
+  evidence: >-
+    Shadow's Platform Architecture page enumerates Keystone, Nova, Nova Metadata, Neutron, Octavia,
+    Designate, Cinder, Glance, Placement, Barbican, CloudKitty and Skyline; the docs link
+    https://docs.openstack.org/2024.1/user/ as the user reference.
+  caveat: >-
+    Partial by the provider's own statement — "not all of these features have been configured or
+    enabled in the Shadow Cloud environment", and "if a feature or capability is not explicitly
+    documented in our knowledge base, it should be assumed that it is not available". Known gap:
+    volume snapshots are not supported.
+- id: openstack-application-credentials
+  name: Keystone Application Credentials
+  conforms: true
+  evidence: Documented as the recommended mechanism for authenticating applications and scripts,
+    with project scoping, role selection, optional expiry and independent revocation.
+- id: openstack-rbac
+  name: Keystone role-based access control
+  conforms: true
+  evidence: Seven named project roles published with their Keystone role names (member, project_mod,
+    project_admin, load-balancer_observer, load-balancer_member, creator, observer).
+- id: cluster-api-openstack
+  name: Kubernetes Cluster API (CAPO)
+  conforms: true
+  evidence: Shadow publishes a Cluster API section — image building, control-plane creation, and
+    worker-pool creation on OpenStack.
+  source: https://gpu-instances.shadow.tech/docs/gpu-paas/cluster-api/
+- id: terraform-openstack-provider
+  name: Terraform (OpenStack provider)
+  conforms: true
+  evidence: 'Shadow lists Terraform, Ansible and Pulumi as supported IaC paths on the Shadow GPU
+    landing page ("IaC — Terraform · Ansible · Pulumi").'
+- id: openapi
+  name: OpenAPI
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document found. Probed /openapi.json, /openapi.yaml, /swagger.json,
+    /api-docs, /docs, /redoc against shadow.tech, gpu-instances.shadow.tech,
+    api.<region>.os.shadow.tech, auth.<region>.os.shadow.tech and portal.<region>.os.shadow.tech —
+    all 404 or an HTML shell. Shadow refers integrators to the upstream OpenStack API reference.
+- id: graphql
+  name: GraphQL
+  conforms: false
+  evidence: No /graphql surface found on any host.
+- id: asyncapi
+  name: AsyncAPI
+  conforms: false
+  evidence: No event, streaming or webhook API is published. The only webhook surface on the domain
+    belongs to the Status.io status page, not to Shadow's platform API.
+- id: mcp
+  name: Model Context Protocol
+  conforms: false
+  evidence: No hosted MCP endpoint and no published stdio MCP package. See mcp/shadow-mcp.yml.
+- id: a2a
+  name: A2A Agent Card
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json return 404 on shadow.tech and
+    drive.shadow.tech; on gpu-instances.shadow.tech they return 200 with an HTML SPA shell titled
+    "Shadow GPU - Redirecting..." for every /.well-known/* path, which is a catch-all, not a card.
+    No a2a/ artifact was written.
+- id: oauth2
+  name: OAuth 2.0
+  conforms: false
+  evidence: /.well-known/oauth-authorization-server returns 404 on shadow.tech and an HTML shell on
+    gpu-instances.shadow.tech. Authentication is Keystone, not OAuth 2.0.
+- id: oidc
+  name: OpenID Connect
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on shadow.tech and drive.shadow.tech, and
+    an HTML shell on gpu-instances.shadow.tech.
+- id: rfc9457-problem-details
+  name: RFC 9457 Problem Details
+  conforms: false
+  evidence: No error format is published by Shadow, and no application/problem+json response was
+    observed.
+- id: rfc9116-security-txt
+  name: RFC 9116 security.txt
+  conforms: false
+  evidence: >-
+    /.well-known/security.txt is 404 on shadow.tech. drive.shadow.tech serves a 200 security.txt, but
+    it is the upstream Nextcloud default shipped with the software (Contact/Policy
+    https://hackerone.com/nextcloud, Expires 2024-08-31 — already expired), so it evidences
+    Nextcloud's disclosure programme, not Shadow's. See well-known/shadow-well-known.yml.
+- id: rfc8594-sunset-header
+  name: RFC 8594 Sunset header
+  conforms: false
+  evidence: No deprecation or sunset policy is published.
+- id: hsts
+  name: HTTP Strict Transport Security
+  conforms: partial
+  evidence: >-
+    shadow.tech sets HSTS with max-age 31536000; gpu-instances.shadow.tech does not set HSTS. See
+    security/shadow-domain-security.yml.
+- id: dnssec
+  name: DNSSEC
+  conforms: false
+  evidence: 'shadow.tech: DNSSEC not enabled, no CAA records (probed).'
+compliance_program:
+  published: false
+  note: >-
+    No trust centre, certification list, or compliance page was found. Probed shadow.tech/security,
+    /trust, /compliance, /us/security/, /us/responsible-disclosure/ (all 404) and
+    trust.shadow.tech / security.shadow.tech (both NXDOMAIN). The Shadow GPU landing page makes an
+    unsourced marketing claim of "100% Enterprise grade security" and describes the offering as
+    "sovereign infrastructure" with data centres in the EU, US and Canada, but names no certification
+    (no SOC 2, ISO 27001, PCI DSS, HIPAA, FedRAMP or SecNumCloud claim was found). No Compliance or
+    TrustCenter pointer is emitted, because there is no published programme to point at.
+data_residency:
+  claim: 'EU / US / CA regional isolation; "Sovereign Cloud GPU", "🇪🇺 Sovereign infrastructure"'
+  regions: [FRSBG01, FRSBG02, FRDUN02, DEFRA01, USWDC01, USPOR01, CAMTL01]
+  countries: [France, Germany, United States, Canada]
+  source: https://gpu-instances.shadow.tech/docs/advanced/regions/

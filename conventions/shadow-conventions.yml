@@ -1,0 +1,164 @@
+generated: '2026-08-17'
+method: searched
+source: https://gpu-instances.shadow.tech/docs/
+docs:
+- https://gpu-instances.shadow.tech/docs/getting-started/architecture/
+- https://gpu-instances.shadow.tech/docs/advanced/limitations/
+- https://gpu-instances.shadow.tech/docs/advanced/instances-statuses/
+- https://gpu-instances.shadow.tech/docs/cli-guide/configuration/
+note: >-
+  Shadow GPU exposes no bespoke API of its own; the request/response semantics an integrator meets
+  are those of the OpenStack services Shadow deploys. This document records ONLY what Shadow itself
+  publishes about its platform, plus which OpenStack services it confirms are in scope — it does not
+  restate the upstream OpenStack API contract as if Shadow had authored it. Where a convention is not
+  documented by Shadow it is recorded as not-documented rather than assumed from upstream defaults.
+api_style:
+  paradigm: REST (OpenStack service APIs)
+  platform: OpenStack 2024.1
+  identity_api: Keystone v3.14 (probed)
+  reference: https://docs.openstack.org/api-ref/
+  reference_ownership: >-
+    Third-party. Shadow's docs link the upstream OpenStack API reference and user guide
+    (https://docs.openstack.org/2024.1/user/) rather than publishing an API reference of their own.
+  scope_statement: >-
+    Shadow states its position on feature scope explicitly: "If a feature or capability is not
+    explicitly documented in our knowledge base, it should be assumed that it is not available or
+    supported in the Shadow cloud environment." Core services (Nova, Neutron, Cinder, Keystone) are
+    described as fully implemented; advanced OpenStack features may be partially implemented or
+    absent.
+services_in_scope:
+- service: Keystone
+  role: Identity and access management; all other services depend on it for token validation and
+    project-scoped access control
+- service: Nova
+  role: Virtual machine lifecycle, scheduling, compute node orchestration
+- service: Nova Metadata
+  role: cloud-init metadata and instance configuration delivery
+- service: Neutron
+  role: Virtual networking, routers, floating IPs, security groups, network isolation
+- service: Octavia
+  role: Load Balancing as a Service
+- service: Designate
+  role: DNS zones and records
+- service: Cinder
+  role: Block storage (volumes, snapshots, backups)
+- service: Glance
+  role: Image storage and provisioning
+- service: Placement
+  role: Resource tracking and scheduling data
+- service: Barbican
+  role: Secrets, certificates and encryption keys
+- service: CloudKitty
+  role: Usage rating and billing engine
+- service: Skyline
+  role: Web dashboard (newer regions)
+- service: Horizon
+  role: 'Web dashboard (observed on FRSBG01: portal.frsbg01.os.shadow.tech serves a Django/Horizon
+    login branded "Shadow Stack" with adjutant-ui)'
+- service: Adjutant
+  role: Project-user invitation and admin task workflow
+authentication:
+  style: Keystone token obtained from a domain-scoped password or an Application Credential
+  detail: authentication/shadow-authentication.yml
+idempotency:
+  supported: not-documented
+  note: >-
+    Shadow publishes no idempotency contract — no idempotency-key header, no request-replay
+    guarantee, and no OpenAPI in which such a parameter could appear. Upstream OpenStack does not
+    define a general idempotency key either. No Idempotency pointer is emitted in apis.yml, because
+    the provider has no idempotency contract to point at.
+pagination:
+  style: not-documented
+  note: >-
+    Shadow's documentation does not describe pagination. The underlying OpenStack services use
+    limit/marker query parameters with a "next" link, but that is an upstream contract Shadow neither
+    restates nor guarantees; recording it here as Shadow's convention would be attributing a
+    contract to the wrong author.
+versioning:
+  scheme: platform-release + per-service microversion (upstream OpenStack)
+  platform_release: '2024.1'
+  identity_version: v3.14 (status stable, updated 2020-04-07, probed from the version document)
+  region_independence: >-
+    Each region is an independent OpenStack deployment with its own identity endpoint and its own
+    dashboard; there is no global endpoint and no cross-region API. Credentials are region-scoped —
+    the FAQ's first troubleshooting question is "are these credentials for this region?"
+  provider_version_policy: not-documented
+error_handling:
+  envelope: not-documented
+  problem_json: false
+  note: >-
+    No error reference, error-code registry, or problem-details format is published by Shadow. Errors
+    are whatever the upstream OpenStack service returns. The docs instead publish troubleshooting
+    prose (FAQ) keyed to failure causes — quota exceeded, invalid or incompatible image format,
+    network connectivity in the selected availability zone, resource constraints on the compute node.
+    No errors/ artifact was written, because there is nothing provider-published to catalogue and
+    nothing to derive from.
+resource_state_machine:
+  note: >-
+    Shadow does publish an explicit instance state vocabulary and a lock mechanism, which is the
+    closest thing to a documented runtime contract on this platform.
+  instance_statuses:
+  - {status: Active, meaning: The instance is running and ready for use}
+  - {status: Shutoff, meaning: Powered off; still exists on the compute node but is not running}
+  - {status: Paused, meaning: State temporarily stored in memory; can be quickly resumed}
+  - {status: Suspended, meaning: State stored on disk rather than in memory}
+  - {status: Shelved, meaning: Shut down and resources released, disk image preserved}
+  - {status: Error, meaning: Error state; usually requires intervention}
+  - {status: Build, meaning: In the process of being created}
+  - {status: Rescue, meaning: In rescue mode, for troubleshooting or recovery}
+  - {status: Resized, meaning: Resized and awaiting confirmation}
+  lock_mechanism:
+    purpose: Prevent accidental modification or deletion of critical instances
+    blocked_when_locked: [delete, power off, reboot, resize, rebuild, snapshot]
+    allowed_when_locked: [view details, connect to a running instance, unlock with permissions]
+  billing_relevance: >-
+    Shadow documents that shelving is the only power state that stops compute charges — soft
+    shutdown, hard power off, pause and suspend all continue to reserve resources and incur charges.
+    A shelved instance is billed only for the stored image.
+  source: https://gpu-instances.shadow.tech/docs/advanced/instances-statuses/
+request_tracing:
+  header: not-documented
+  note: >-
+    Shadow does not document a request-id header. Upstream OpenStack services return
+    x-openstack-request-id, but Shadow makes no statement about it and no unauthenticated call was
+    available to observe one.
+rate_limit_signalling:
+  detail: rate-limits/shadow-rate-limits.yml
+  note: Quota-based, not request-rate based; see the rate-limits artifact.
+storage_classes:
+  note: >-
+    Cinder volume types are a Shadow-specific naming convention worth recording, because a caller
+    must pass the type name verbatim. Most compute hosts have no local storage, so Cinder is the
+    normal root/data path.
+  types:
+  - {name: Wood, tier: standard, status: available}
+  - {name: Silver, tier: enhanced, status: available}
+  - {name: Gold, tier: highest-performance, status: 'coming soon — not yet available'}
+  published_qos: >-
+    Shadow publishes identical QoS figures for all three tiers (write/read IOPS 60,000, max 120,000;
+    write throughput 250 MB/s; read throughput 500 MB/s), which does not differentiate them. This is
+    recorded verbatim as published; it is a documentation defect on the provider's side, not a
+    derivation of ours.
+  constraints:
+  - Volumes can be extended but not shrunk
+  - 'Instance must be shut down before resizing a volume, then the filesystem expanded after boot'
+  - 'Volume snapshots are listed as a known issue: "Volumes snapshots are not currently supported"'
+  source: https://gpu-instances.shadow.tech/docs/advanced/storage-classes/
+infrastructure_as_code:
+  supported:
+  - Terraform (via the upstream OpenStack provider)
+  - Ansible
+  - Pulumi
+  - Kubernetes / Cluster API
+  cluster_api_docs: https://gpu-instances.shadow.tech/docs/gpu-paas/cluster-api/
+  claim: >-
+    Shadow's marketing states the API surface as "OpenStack / K8s standard" and "Plug into your
+    existing pipelines in 5 minutes", positioning standards-compliance as the integration story
+    rather than a proprietary SDK.
+  source: https://gpu-instances.shadow.tech/en/
+cross_links:
+  authentication: authentication/shadow-authentication.yml
+  lifecycle: lifecycle/shadow-lifecycle.yml
+  conformance: conformance/shadow-conformance.yml
+  rate_limits: rate-limits/shadow-rate-limits.yml
+  plans: plans/shadow-plans-pricing.yml

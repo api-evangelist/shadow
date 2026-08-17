@@ -1,0 +1,27 @@
+generated: '2026-08-17'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: shadow.tech
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov 12 15:31:11 2026 GMT
+  hsts: true
+  hsts_max_age: 31536000
+- host: gpu-instances.shadow.tech
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 18 02:14:54 2026 GMT
+  hsts: false
+- host: auth.frsbg01.os.shadow.tech
+  https: true
+  tls_cert_error: '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has
+    expired (_ssl.c:1082)'
+  hsts: null
+domains:
+- domain: shadow.tech
+  dnssec: false
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine

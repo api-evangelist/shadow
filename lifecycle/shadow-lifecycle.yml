@@ -1,0 +1,87 @@
+generated: '2026-08-17'
+method: searched
+source: https://status.shadow.tech/
+versioning:
+  scheme: upstream-platform-release
+  platform: OpenStack 2024.1
+  current: Keystone Identity API v3.14 (probed 2026-08-17)
+  docs: https://gpu-instances.shadow.tech/docs/getting-started/architecture/
+  note: >-
+    Shadow publishes no versioning policy of its own for the Shadow GPU API. Version identity comes
+    from the OpenStack release it deploys and the per-service microversions upstream defines. Each of
+    the seven regions is an independent deployment; FRSBG01 was observed running a Horizon-based
+    dashboard branded "Shadow Stack" while the docs describe Skyline, so regions are not guaranteed to
+    be on the same platform build.
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: not-documented
+  note: >-
+    No deprecation policy, sunset schedule, or RFC 8594 Sunset/Deprecation header support is
+    published. Probed /docs/release-notes/ and /docs/changelog/ on gpu-instances.shadow.tech — both
+    404. The docs advise users to "Regularly check our documentation and release notes for updates on
+    newly available features" but publish no release-notes page. No Deprecation pointer is emitted.
+  forward_looking_notice: >-
+    One roadmap item is published on the Shadow GPU landing page — "Coming soon: Inference as a
+    service", billed per usage via "a simple endpoint" for private or public hosted models. That is an
+    announced future API surface, not a deprecation.
+status_page:
+  url: https://status.shadow.tech/
+  platform: Status.io
+  http_status: 200
+  components:
+  - Shadow PC service
+  - 'Data centres: Dunkerque, Strasbourg, Frankfurt, Montréal, Washington DC, Portland'
+  - 'Web services: Authentication, Shop, Account, Landing'
+  - Shadow in Browser
+  - Shadow Drive
+  - Drive service
+  third_party_dependencies_tracked: [Cloudflare, Stripe, Zendesk]
+  feeds:
+    rss: https://status.shadow.tech/pages/5bbcb1b0b0936904c004bbeb/rss
+  subscriptions: [email, webhook (JSON POST to a custom URL), Slack]
+  coverage_gap: >-
+    The status page tracks Shadow PC, Shadow Drive and the shared web services. It does NOT list a
+    Shadow GPU / OpenStack component, so the API surface profiled here has no status component of its
+    own — an integrator cannot subscribe to incidents for the region their instances run in.
+sla:
+  published: false
+  url: null
+  uptime_target: null
+  note: >-
+    No public SLA document. Availability is expressed commercially instead: Spot instances are "Not
+    guaranteed / Preemptible based on availability", On Demand instances are "Guaranteed — once
+    allocated, availability assured", and Dedicated 24/7 is "Complete guarantee for the entire
+    reservation period". Shadow states that SLAs are negotiated on the Enterprise tier ("Quotas and
+    SLAs negotiated to your activity"), which places the SLA behind a sales conversation.
+  source: https://gpu-instances.shadow.tech/en/
+maintenance:
+  policy: >-
+    The docs state that "your cloud administrators will communicate" scheduled maintenance windows,
+    expected impact, required user actions and emergency maintenance procedures, but publish no
+    maintenance calendar or notification channel URL.
+  source: https://gpu-instances.shadow.tech/docs/faq/
+support:
+  help_center: https://support.shadow.tech/hc/en-us
+  platform: Zendesk
+  business_solutions: https://support.shadow.tech/hc/en-us/categories/32541680362129-Business-Solutions
+  gpu_support_tiers:
+  - {tier: Pay as you go, support: Standard weekday support}
+  - {tier: Monthly plan, support: Success Manager on demand}
+  - {tier: Enterprise, support: Dedicated Success Manager}
+  contact_email: support@shadow.tech
+retired_surfaces:
+- surface: developers.shadow.tech
+  status: retired
+  evidence: 'Probed 2026-08-17: https://developers.shadow.tech/ answers 403 and redirects to
+    https://support.shadow.tech/hc/en-us. Third-party API directories still list a Shadow/Blade
+    developer portal with OAuth playground, GraphQL playground and OpenAPI specs at this host; none of
+    that is reachable today and none of it was found anywhere else on the domain.'
+- surface: business.shadow.tech
+  status: gated
+  evidence: 'Probed 2026-08-17: returns HTTP 401 with no public landing page.'
+deprecated_operations: []
+cross_links:
+  conventions: conventions/shadow-conventions.yml
+  conformance: conformance/shadow-conformance.yml
+  plans: plans/shadow-plans-pricing.yml

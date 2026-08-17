@@ -1,0 +1,81 @@
+generated: '2026-08-17'
+method: probed
+source: live probes of every Shadow host found in apis.yml, the docs, and the region list
+outcome: no-provider-served-well-known-document
+note: >-
+  Every /.well-known/ path was probed on every Shadow host. Shadow serves NO well-known discovery
+  document of its own. Two failure modes are recorded here because both are the kind of thing that gets
+  miscounted as a hit. First, gpu-instances.shadow.tech answers HTTP 200 for EVERY /.well-known/* path
+  with the same HTML page — a language-detect redirect shell titled "Shadow GPU - Redirecting..." — so
+  those 200s are a catch-all, not documents. Second, drive.shadow.tech does serve a real
+  security.txt at 200, but it is the default file shipped with Nextcloud (the software Shadow Drive is
+  built on): its Contact and Policy point at hackerone.com/nextcloud, and it expired on 2024-08-31.
+  It evidences Nextcloud's disclosure programme, not Shadow's.
+  CONSEQUENCE: no WellKnown pointer and no SecurityTxt pointer is emitted in apis.yml. This file is a
+  recorded absence, which is valid data — it must not be read as a presence.
+hosts:
+- host: https://shadow.tech
+  role: corporate website
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /robots.txt, status: 404, note: 'the site has no robots.txt; / redirects to /us/ and the
+      404 is served from /us/robots.txt'}
+  - {path: /llms.txt, status: 404}
+- host: https://gpu-instances.shadow.tech
+  role: Shadow GPU product site + documentation
+  soft_200_catchall: true
+  documents:
+  - {path: /.well-known/security.txt, status: 200, real_document: false, note: HTML SPA shell}
+  - {path: /.well-known/openid-configuration, status: 200, real_document: false, note: HTML SPA shell}
+  - {path: /.well-known/oauth-authorization-server, status: 200, real_document: false, note: HTML SPA
+      shell}
+  - {path: /.well-known/api-catalog, status: 200, real_document: false, note: HTML SPA shell}
+  - {path: /.well-known/ai-plugin.json, status: 200, real_document: false, note: HTML SPA shell}
+  - {path: /.well-known/agent-card.json, status: 200, real_document: false, note: 'HTML SPA shell —
+      rejected, no agent card written'}
+  - {path: /.well-known/agent.json, status: 200, real_document: false, note: HTML SPA shell}
+  - {path: /llms.txt, status: 200, real_document: false, note: 'HTML SPA shell, 2271 bytes, title
+      "Shadow GPU - Redirecting..." — NOT an llms.txt'}
+  - {path: /docs/llms.txt, status: 404}
+  - {path: /sitemap.xml, status: 200, real_document: true, note: 'real sitemap, 13 URLs, marketing
+      pages only — the /docs/ tree (Hugo, Lotus Docs theme) is not in it'}
+- host: https://drive.shadow.tech
+  role: Shadow Drive (Nextcloud)
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    real_document: true
+    file: shadow-drive-security.txt
+    ownership: third-party
+    note: >-
+      Upstream Nextcloud default, unmodified. Contact and Policy are https://hackerone.com/nextcloud;
+      Expires 2024-08-31T23:00:00.000Z, i.e. already expired. Served after a 301 to
+      /index.php/.well-known/security.txt. Does not evidence a Shadow-operated disclosure programme, so
+      no SecurityTxt or Security pointer is emitted from it.
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /, status: 403, note: 'redirects to https://auth.eu.shadow.tech/ui/kratos/login — Ory
+      Kratos identity gate'}
+- host: https://auth.frsbg01.os.shadow.tech
+  role: 'OpenStack Keystone identity endpoint (FRSBG01) — discovered by probe'
+  documents:
+  - {path: /v3, status: 200, real_document: true, note: 'OpenStack Identity API v3.14 version document
+      (not a /.well-known path, recorded here as the one machine-readable document the platform does
+      serve anonymously)'}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+observations:
+- 'auth.eu.shadow.tech runs Ory Kratos as the identity gate for Shadow Drive, but exposes no
+  /.well-known/openid-configuration.'
+- 'No /.well-known/api-catalog (RFC 9727) anywhere on the domain.'
+- 'No AI-agent consent or content-signal documents (ai.txt, aipref, content-signal) on any host.
+  https://gpu-instances.shadow.tech/ai.txt returns 200 but is the same HTML redirect shell as every
+  other unmatched path on that host.'
+- 'https://auth.eu.shadow.tech/.well-known/openid-configuration -> 404 (probed).'
