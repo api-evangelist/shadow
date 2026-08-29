@@ -12,6 +12,17 @@ description: 'Shadow is a French cloud computing company founded in 2015, launch
   upstream openstack CLI, Terraform, Ansible, Pulumi or Cluster API. Shadow publishes no OpenAPI,
   AsyncAPI, first-party SDK, MCP server or A2A agent card of its own.'
 url: https://raw.githubusercontent.com/api-evangelist/shadow/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://gpu-instances.shadow.tech/assets/images/vignette.png
 x-type: company
 x-source: serena-portfolio
